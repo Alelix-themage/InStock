@@ -33,7 +33,7 @@ def consultar_produtos():
     # Exibe os resultados na área de texto
     if resultados:
         # Cria um DataFrame Pandas com os resultados
-        df = pd.DataFrame(resultados, columns=["Cod","Item", "Quantidade", "Preço"])
+        df = pd.DataFrame(resultados, columns=["Cod, Item", "Quantidade", "Preço"])
         
         # Cria um widget de tabela usando PandasTable
         table = Table(frame, dataframe=df)
