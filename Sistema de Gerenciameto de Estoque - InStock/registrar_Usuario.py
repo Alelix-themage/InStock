@@ -2,6 +2,7 @@ import tkinter as tk
 import customtkinter
 from tkinter import messagebox
 import databaseUser
+from hashlib import md5
 
 class TelaRegistro(tk.Toplevel):
     def __init__(self, master):
@@ -32,7 +33,8 @@ class TelaRegistro(tk.Toplevel):
 
         self.senha = customtkinter.CTkEntry(master=frame, placeholder_text="Senha", width=300, height=35)
         self.senha.place(relx=0.5, rely=0.480, anchor=tk.CENTER)
-
+        
+        
         registro = customtkinter.CTkButton(master=frame, text="Registrar conta", command=self.button_event, width=300, height=35, fg_color="green")
         registro.place(relx=0.5, rely=0.560, anchor=tk.CENTER)
 
@@ -40,17 +42,27 @@ class TelaRegistro(tk.Toplevel):
         voltar = customtkinter.CTkButton(master=frame, text="Voltar", command=self.voltar_para_login, width=300, height=35)
         voltar.place(relx=0.5, rely=0.640, anchor=tk.CENTER)
 
+    
+    def cript(self):
+        """Função que criptografa a senha do sqlite"""
+        senha = self.senha.get()
+        texto_cripto = senha.encode("utf-8")
+        self.hash = md5(texto_cripto).hexdigest()  # Convertendo a hash para uma string hexadecimal
+    
     def button_event(self):
+        self.cript()  # Chama o método para calcular a hash da senha
         self.cadastraUserTable()
 
     def cadastraUserTable(self):
         nome = self.user.get()
         email = self.email.get()
         cpf = self.cpf.get()
-        senha = self.senha.get()
+        #criptografia de senha
+        senha_criptografada = self.hash
+        
         databaseUser.cursor.execute("""
             INSERT INTO Users(Nome, Email, CPF, Senha) VALUES(?, ?, ?, ?)                            
-        """,(nome, email, cpf, senha))
+        """,(nome, email, cpf, senha_criptografada))
         databaseUser.conn.commit()
         messagebox.showinfo(title="Alerta de Cadastro", message="Usuário realizado com Sucesso!")
 
