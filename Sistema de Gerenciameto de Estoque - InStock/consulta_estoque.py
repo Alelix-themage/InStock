@@ -15,7 +15,7 @@ cursor = banco_de_dados.cursor()
 
 # Função para criar o banco de dados com produtos cadastrados (caso necessário)
 def criar_banco(nome_item):
-    cursor.execute("INSERT INTO Estoque (Item, Quantidade, Preço) VALUES (?, ?, ?)", (nome_item, 0, 0.0))
+    cursor.execute("INSERT INTO Estoque (Cod, Item, Quantidade, Preço) VALUES (?, ?, ?)", (nome_item, 0, 0.0))
     banco_de_dados.commit()
 
 # Função para consultar produtos no banco de dados com base no critério de pesquisa
