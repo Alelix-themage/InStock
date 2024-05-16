@@ -3,7 +3,7 @@ import customtkinter
 import sqlite3 as sq
 from tkinter import messagebox
 import pandas as pd
-from pandastable import Table
+from pandastable import Table, TableModel
 
 # Configuração do tema do customtkinter
 customtkinter.set_appearance_mode("dark")
@@ -15,7 +15,7 @@ cursor = banco_de_dados.cursor()
 
 # Função para criar o banco de dados com produtos cadastrados (caso necessário)
 def criar_banco(nome_item):
-    cursor.execute("INSERT INTO Estoque (Item, Quantidade, Preço) VALUES (?, ?, ?)", (nome_item, 0, 0.0))
+    cursor.execute("INSERT INTO Estoque (Cod, Item, Quantidade, Preço) VALUES (?, ?, ?)", (nome_item, 0, 0.0))
     banco_de_dados.commit()
 
 # Função para consultar produtos no banco de dados com base no critério de pesquisa
@@ -33,10 +33,17 @@ def consultar_produtos():
     # Exibe os resultados na área de texto
     if resultados:
         # Cria um DataFrame Pandas com os resultados
-        df = pd.DataFrame(resultados, columns=["Cod","Item", "Quantidade", "Preço"])
-        
+        df = pd.DataFrame(resultados, columns=["Cod", "Item", "Quantidade", "Preço"])
+
+        # Cria um modelo de tabela PandasTable
+        model = TableModel(dataframe=df)
+
+        # Limpa o frame antes de exibir uma nova tabela
+        for widget in frame.winfo_children():
+            widget.destroy()
+
         # Cria um widget de tabela usando PandasTable
-        table = Table(frame, dataframe=df)
+        table = Table(frame, model=model)
         table.show()
     else:
         messagebox.showinfo("Nenhum Resultado", "Nenhum resultado encontrado.")
