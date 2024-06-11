@@ -23,12 +23,13 @@ def abrir_tela_home():
     root.destroy()
 
 def login():
+    #Passa pela verificação de senha para permitir o login
     usuario = user_entry.get()
     senha = senha_entry.get()
     if verificacao.validar(usuario, senha):
         abrir_tela_home()
     else:
-        return 0
+        print("Senha Incorreta. Tente Novamente!")
 
 root = customtkinter.CTk()
 root.geometry("1280x720")

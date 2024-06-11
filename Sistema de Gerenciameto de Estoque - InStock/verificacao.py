@@ -2,6 +2,7 @@ import sqlite3
 from hashlib import md5
 
 def buscar_usuario(usuario):
+    '''buscar usuário no banco, para puxar a senha'''
     conn = sqlite3.connect('user.db')
     cursor = conn.cursor()
     cursor.execute('''
@@ -12,11 +13,13 @@ def buscar_usuario(usuario):
     return result[0] if result else None
 
 def codificar(usuario, senha):
+    '''codificação da senha, criando um hash'''
     texto = senha.encode('utf-8')
     hash = md5(texto).hexdigest()
     print("Senha codificada: " + hash)
 
 def validar(usuario, senha):
+    ''' Validação da senha '''
     hash_correto = buscar_usuario(usuario)
     if not hash_correto:
         print("Usuário não encontrado!")

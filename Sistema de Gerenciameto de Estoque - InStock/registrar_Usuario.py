@@ -43,11 +43,13 @@ class TelaRegistro(tk.Toplevel):
         return md5(texto).hexdigest()
     
     def button_event(self):
+        '''Codifica a senha para registrar no banco'''
         senha = self.senha.get()
         self.hash = self.codificar(senha)
         self.cadastraUserTable()
 
     def cadastraUserTable(self):
+        '''Cadastra o usuário no Banco'''
         nome = self.user.get()
         email = self.email.get()
         cpf = self.cpf.get()
