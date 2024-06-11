@@ -1,5 +1,5 @@
 import sqlite3
-from hashlib import md5
+import bcrypt
 
 def verificaLogin(usuario, senha):
     conn = sqlite3.connect('user.db')
@@ -13,10 +13,10 @@ def verificaLogin(usuario, senha):
 
     if resultado:
         senha_hash_armazenada = resultado[0]
-        senha_hash_fornecida = md5(senha.encode("utf-8")).hexdigest()
+        senha_fornecida = senha.encode('utf-8')
         
-        print("Senha fornecida:", senha_hash_fornecida)
-        print("Senha armazenada:", senha_hash_armazenada)
+        print(f"Senha fornecida: {senha_fornecida}")
+        print(f"Senha armazenada: {senha_hash_armazenada}")
         
-        return senha_hash_fornecida == senha_hash_armazenada
+        return bcrypt.checkpw(senha_fornecida, senha_hash_armazenada.encode('utf-8'))
     return False

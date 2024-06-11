@@ -1,9 +1,11 @@
+import os
 import tkinter as tk
 import customtkinter
 import sqlite3 as sq
 from tkinter import messagebox
 import pandas as pd
 from pandastable import Table, TableModel
+import subprocess
 
 # Configuração do tema do customtkinter
 customtkinter.set_appearance_mode("dark")
@@ -15,7 +17,7 @@ cursor = banco_de_dados.cursor()
 
 # Função para criar o banco de dados com produtos cadastrados (caso necessário)
 def criar_banco(nome_item):
-    cursor.execute("INSERT INTO Estoque (Cod, Item, Quantidade, Preço) VALUES (?, ?, ?)", (nome_item, 0, 0.0))
+    cursor.execute("INSERT INTO Estoque (Cod, Item, Quantidade, Preço) VALUES (?, ?, ?, ?)", (None, nome_item, 0, 0.0))
     banco_de_dados.commit()
 
 # Função para consultar produtos no banco de dados com base no critério de pesquisa
@@ -48,15 +50,28 @@ def consultar_produtos():
     else:
         messagebox.showinfo("Nenhum Resultado", "Nenhum resultado encontrado.")
 
+# Função para voltar à tela inicial
+def voltar_home():
+    janela.destroy()
+    script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "home.py")
+    subprocess.run(["python", script_path])
+
+# Função para encerrar o programa quando a janela for fechada
+def fechar_janela():
+    janela.quit()
+
 # Criando a janela principal
 janela = customtkinter.CTk()
 janela.title("Consulta de Estoque - Multishine")
-janela.geometry("800x600+400+200")
 
 # Definindo cor de fundo e fonte
 cor_fundo = "#0a0a0a"  # Cor escura de fundo
 fonte_titulo = ("Roboto", 20, "bold")
 fonte = ("Roboto", 12)
+
+# Função para maximizar a janela após a inicialização
+def maximize_window():
+    janela.state('zoomed')
 
 # Título da janela
 titulo = customtkinter.CTkLabel(janela, text="Consulta de Estoque", font=fonte_titulo)
@@ -78,8 +93,18 @@ adicionar_item.grid(row=0, column=1, padx=10, pady=10)
 button_consultar = customtkinter.CTkButton(frame, text="Consultar", command=consultar_produtos, width=20)
 button_consultar.grid(row=0, column=2, padx=10, pady=10)
 
+# Botão para voltar à tela inicial
+button_voltar = customtkinter.CTkButton(frame, text="Voltar", command=voltar_home, width=20)
+button_voltar.grid(row=0, column=3, padx=10, pady=10)
+
 # Configura a cor de fundo da janela
 janela.configure(bg=cor_fundo)
+
+# Configura a ação de fechamento da janela
+janela.protocol("WM_DELETE_WINDOW", fechar_janela)
+
+# Agendar a maximização da janela após a inicialização
+janela.after(0, maximize_window)
 
 # Inicia o loop principal da aplicação
 janela.mainloop()

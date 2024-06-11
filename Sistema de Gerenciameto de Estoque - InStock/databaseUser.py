@@ -1,8 +1,7 @@
 import sqlite3 as sq
 
 conn = sq.connect("user.db")
-
-cursor  = conn.cursor()
+cursor = conn.cursor()
 
 cursor.execute("""
     CREATE TABLE IF NOT EXISTS Users(

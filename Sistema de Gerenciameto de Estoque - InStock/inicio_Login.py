@@ -1,42 +1,36 @@
 import tkinter as tk
 import customtkinter
-from registrar_Usuario import TelaRegistro
-import verificacao
+from subprocess import call
+from registrar_Usuario import TelaRegistro  # Importe a classe TelaRegistro
 
 customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("blue")
 
-def button_event():
-    nome_usuario = user_entry.get()
-    senha_usuario = senha_entry.get()
-    if verificacao.verificaLogin(nome_usuario, senha_usuario):
-        print("Entrou!")
-    
-    else:
-        print("Falha no login!")
-
 def abrir_tela_registro():
-    root.withdraw()  # Esconde a tela de login
-    tela_registro = TelaRegistro(root)  # Cria a instância da tela de registro
+    tela_registro = TelaRegistro(root)  # Crie uma instância da classe TelaRegistro
+    root.withdraw()
 
 def on_closing():
-    root.destroy()  # Encerra a aplicação quando a janela de login é fechada
+    root.destroy()
 
-def mask_password_entry(event):
-    senha_content = senha_entry.get()
-    senha_entry.delete(0, tk.END)
-    senha_entry.insert(0, "*" * len(senha_content))
+def maximize_window():
+    root.state('zoomed')
 
+def abrir_tela_home():
+    root.withdraw()
+    call(["python", "C:/Users/vinic/OneDrive/Área de Trabalho/InStock-main 1/Sistema de Gerenciameto de Estoque - InStock/home.py"])
+    root.destroy()
 
 root = customtkinter.CTk()
 root.geometry("1280x720")
-root.protocol("WM_DELETE_WINDOW", on_closing)  # Define a função a ser chamada quando a janela é fechada
+root.protocol("WM_DELETE_WINDOW", on_closing)
 
-# Criando o frame principal
+# Agendar a maximização da janela após a inicialização
+root.after(0, maximize_window)
+
 frame = customtkinter.CTkFrame(master=root)
 frame.pack(pady=50, padx=50, fill="both", expand=True)
 
-# Adicionando o conteúdo dentro do frame principal
 label = customtkinter.CTkLabel(master=frame, text="MultiShine", font=("Roboto", 50))
 label.pack(padx=1, pady=20)
 
@@ -45,9 +39,8 @@ user_entry.pack(padx=50, pady=5)
 
 senha_entry = customtkinter.CTkEntry(master=frame, placeholder_text="Senha", width=300, height=35, show="*")
 senha_entry.pack(padx=50, pady=5)
-senha_entry.bind("<Key>", mask_password_entry)  # Atualiza a máscara toda vez que uma tecla é pressionada
 
-entrar_button = customtkinter.CTkButton(master=frame, text="Entrar", command=button_event, width=300, height=35)
+entrar_button = customtkinter.CTkButton(master=frame, text="Entrar", command=abrir_tela_home, width=300, height=35)
 entrar_button.pack(padx=50, pady=5)
 
 registro_button = customtkinter.CTkButton(master=frame, text="Registrar-se", command=abrir_tela_registro, width=300, height=35, fg_color="green")
