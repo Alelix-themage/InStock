@@ -2,7 +2,7 @@ import tkinter as tk
 import customtkinter
 from tkinter import messagebox
 import databaseUser
-import bcrypt
+from hashlib import md5
 
 class TelaRegistro(tk.Toplevel):
     def __init__(self, master):
@@ -13,9 +13,6 @@ class TelaRegistro(tk.Toplevel):
         
         customtkinter.set_appearance_mode("dark")
         customtkinter.set_default_color_theme("blue")
-
-        # Maximize a janela ao ser criada
-        self.state('zoomed')
         
         frame = customtkinter.CTkFrame(master=self)
         frame.pack(pady=0, padx=0, fill="both", expand=True)
@@ -41,13 +38,13 @@ class TelaRegistro(tk.Toplevel):
         voltar = customtkinter.CTkButton(master=frame, text="Voltar", command=self.voltar_para_login, width=300, height=35)
         voltar.place(relx=0.5, rely=0.640, anchor=tk.CENTER)
 
-    def cript(self):
-        senha = self.senha.get().encode("utf-8")
-        self.hash = bcrypt.hashpw(senha, bcrypt.gensalt()).decode('utf-8')
-        print(f"Senha criptografada: {self.hash}")
+    def codificar(self, senha):
+        texto = senha.encode('utf-8')
+        return md5(texto).hexdigest()
     
     def button_event(self):
-        self.cript()
+        senha = self.senha.get()
+        self.hash = self.codificar(senha)
         self.cadastraUserTable()
 
     def cadastraUserTable(self):
@@ -65,7 +62,7 @@ class TelaRegistro(tk.Toplevel):
     def voltar_para_login(self):
         self.destroy()
         self.master.deiconify()
-        self.master.state('zoomed')  # Maximize a tela de login
+        self.master.state('zoomed')
 
 if __name__ == "__main__":
     root = tk.Tk()

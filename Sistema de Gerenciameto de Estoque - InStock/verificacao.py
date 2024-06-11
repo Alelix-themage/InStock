@@ -1,22 +1,32 @@
 import sqlite3
-import bcrypt
+from hashlib import md5
 
-def verificaLogin(usuario, senha):
+def buscar_usuario(usuario):
     conn = sqlite3.connect('user.db')
     cursor = conn.cursor()
-
-    query = "SELECT Senha FROM Users WHERE Nome = ?"
-    cursor.execute(query, (usuario,))
-    resultado = cursor.fetchone()
-
+    cursor.execute('''
+        SELECT senha FROM Users WHERE Nome = ?
+    ''', (usuario,))
+    result = cursor.fetchone()
     conn.close()
+    return result[0] if result else None
 
-    if resultado:
-        senha_hash_armazenada = resultado[0]
-        senha_fornecida = senha.encode('utf-8')
-        
-        print(f"Senha fornecida: {senha_fornecida}")
-        print(f"Senha armazenada: {senha_hash_armazenada}")
-        
-        return bcrypt.checkpw(senha_fornecida, senha_hash_armazenada.encode('utf-8'))
-    return False
+def codificar(usuario, senha):
+    texto = senha.encode('utf-8')
+    hash = md5(texto).hexdigest()
+    print("Senha codificada: " + hash)
+
+def validar(usuario, senha):
+    hash_correto = buscar_usuario(usuario)
+    if not hash_correto:
+        print("Usuário não encontrado!")
+        return
+    texto = senha.encode('utf-8')
+    hash = md5(texto).hexdigest()
+    if hash == hash_correto:
+        print("Senha Válida")
+        print("Senha codificada: " + hash)
+    else:
+        print("Senha Inválida!")
+
+
