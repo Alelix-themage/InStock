@@ -20,20 +20,26 @@ def maximize_window():
 
 # Função para abrir a tela de consulta de estoque
 def abrir_consulta_estoque():
+    novo_arquivo = os.path.join(diretorio_atual, "consulta_estoque.py")
+    print(f"Abrindo o arquivo: {novo_arquivo}")  # Mensagem de depuração para verificar o caminho do arquivo
     root.withdraw()
-    subprocess.run(["python", os.path.join(diretorio_atual, "consulta_estoque.py")])
+    subprocess.run(["python", novo_arquivo])
     root.destroy()  # Fechar a tela de home após a tela de consulta ser fechada
 
 # Função para abrir a tela de cadastro de itens
 def abrir_cadastro_itens():
+    novo_arquivo = os.path.join(diretorio_atual, "cadastrar_itens.py")
+    print(f"Abrindo o arquivo: {novo_arquivo}")
     root.withdraw()
-    subprocess.run(["python", os.path.join(diretorio_atual, "cadastrar_itens.py")])
+    subprocess.run(["python", novo_arquivo])
     root.destroy()  # Fechar a tela de home após a tela de cadastro ser fechada
 
 # Função para abrir a tela de suporte
 def abrir_suporte():
+    novo_arquivo = os.path.join(diretorio_atual, "suporte.py")
+    print(f"Abrindo o arquivo: {novo_arquivo}")
     root.withdraw()
-    subprocess.run(["python", os.path.join(diretorio_atual, "suporte.py")])
+    subprocess.run(["python", novo_arquivo])
     root.destroy()  # Fechar a tela de home após a tela de suporte ser fechada
 
 # Configurar o título e a fonte do rótulo principal

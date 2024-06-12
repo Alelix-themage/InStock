@@ -45,8 +45,21 @@ def consultar_produtos():
             widget.destroy()
 
         # Cria um widget de tabela usando PandasTable
-        table = Table(frame_tabela, model=model)
+        table = Table(frame_tabela, model=model, editable=True)
         table.show()
+
+        # Função para capturar as alterações na tabela
+        def on_edit_cell(row, col, value):
+            cod = df.iloc[row]["Cod"]
+            column_name = df.columns[col]
+            # Atualiza o DataFrame
+            df.at[row, column_name] = value
+            # Atualiza o banco de dados
+            cursor.execute(f"UPDATE Estoque SET {column_name} = ? WHERE Cod = ?", (value, cod))
+            banco_de_dados.commit()
+
+        # Bind the edit cell function
+        table.bind('celledited', lambda event, row, col, value: on_edit_cell(row, col, value))
         table.redraw()  # Força a atualização da tabela
 
         # Mostra o botão Nova Consulta
@@ -70,6 +83,16 @@ def nova_consulta():
     button_nova_consulta.grid_forget()
     # Mostra o botão Exportar Excel
     button_exportar_excel.grid(row=0, column=3, padx=10, pady=10)
+
+# Função para deletar o item do banco de dados
+def deletar_item():
+    texto_item = adicionar_item.get()
+    consulta_sql = "DELETE FROM Estoque WHERE Item LIKE ?;"
+    cursor.execute(consulta_sql, ('%' + texto_item + '%',))
+    banco_de_dados.commit()
+    messagebox.showinfo("Item Deletado", "O item foi deletado com sucesso.")
+    # Atualiza a consulta para refletir as alterações
+    consultar_produtos()
 
 # Função para exportar resultados para Excel
 def exportar_excel():
@@ -134,6 +157,10 @@ button_consultar.grid(row=0, column=2, padx=10, pady=10)
 # Botão para exportar resultados para Excel
 button_exportar_excel = customtkinter.CTkButton(frame, text="Exportar Excel", command=exportar_excel)
 button_exportar_excel.grid(row=0, column=3, padx=10, pady=10)
+
+# Botão para deletar o item do banco
+button_delete = customtkinter.CTkButton(frame, text="Deletar", command=deletar_item)
+button_delete.grid(row=0, column=4, padx=10, pady=10)
 
 # Frame para exibir a tabela de resultados
 frame_tabela = tk.Frame(janela, bg=cor_fundo)

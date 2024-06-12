@@ -3,6 +3,7 @@ import customtkinter
 from subprocess import call
 from registrar_Usuario import TelaRegistro  # Importe a classe TelaRegistro
 import verificacao
+import os
 
 customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("blue")
@@ -18,12 +19,18 @@ def maximize_window():
     root.state('zoomed')
 
 def abrir_tela_home():
+    print("Abrindo a tela home...")
     root.withdraw()
-    call(["python", "C:/Users/vinic/OneDrive/Área de Trabalho/InStock-main 1/Sistema de Gerenciameto de Estoque - InStock/home.py"])
+    # Obtém o diretório do script atual
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    # Constrói o caminho absoluto para o script home.py
+    home_script = os.path.join(current_dir, "home.py")
+    print(f"Executando o script: {home_script}")  # Mensagem de depuração para verificar o caminho do script
+    call(["python", home_script])
     root.destroy()
 
 def login():
-    #Passa pela verificação de senha para permitir o login
+    # Passa pela verificação de senha para permitir o login
     usuario = user_entry.get()
     senha = senha_entry.get()
     if verificacao.validar(usuario, senha):

@@ -33,10 +33,10 @@ class SupportApp:
         # Link para formulário de abertura de chamados
         self.form_label = ctk.CTkLabel(self.main_frame, text="Formulário para abertura de chamados:", font=("Arial", 14, "underline"), text_color="#1e90ff", cursor="hand2")
         self.form_label.pack(pady=5)
-        self.form_label.bind("<Button-1>", lambda e: self.abrir_link("https://link-para-formulario.com"))
+        self.form_label.bind("<Button-1>", lambda e: self.abrir_link("https://docs.google.com/forms/d/e/1FAIpQLSdWi83xT5Web7uDR8zf0XJjg-1N1aujPIpUVtNlPLHFFB26qw/viewform?usp=sf_link"))
 
         # E-mail de contato
-        self.email_label = ctk.CTkLabel(self.main_frame, text="E-mail para contato: teste@outlook.com", font=("Arial", 14), text_color="#ffffff")
+        self.email_label = ctk.CTkLabel(self.main_frame, text="E-mail para contato: sup.instock@gmail.com", font=("Arial", 14), text_color="#ffffff")
         self.email_label.pack(pady=5)
 
         # Agendar a maximização da janela após a inicialização

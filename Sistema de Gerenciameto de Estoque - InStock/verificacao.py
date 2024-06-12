@@ -23,13 +23,13 @@ def validar(usuario, senha):
     hash_correto = buscar_usuario(usuario)
     if not hash_correto:
         print("Usuário não encontrado!")
-        return
+        return False
     texto = senha.encode('utf-8')
     hash = md5(texto).hexdigest()
     if hash == hash_correto:
         print("Senha Válida")
         print("Senha codificada: " + hash)
+        return True
     else:
         print("Senha Inválida!")
-
-
+        return False
