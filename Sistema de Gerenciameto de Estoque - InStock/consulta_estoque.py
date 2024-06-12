@@ -2,7 +2,7 @@ import os
 import tkinter as tk
 import customtkinter
 import sqlite3 as sq
-from tkinter import messagebox
+from tkinter import messagebox, filedialog
 import pandas as pd
 from pandastable import Table, TableModel
 import subprocess
@@ -41,14 +41,52 @@ def consultar_produtos():
         model = TableModel(dataframe=df)
 
         # Limpa o frame antes de exibir uma nova tabela
-        for widget in frame.winfo_children():
+        for widget in frame_tabela.winfo_children():
             widget.destroy()
 
         # Cria um widget de tabela usando PandasTable
-        table = Table(frame, model=model)
+        table = Table(frame_tabela, model=model)
         table.show()
+        table.redraw()  # Força a atualização da tabela
+
+        # Mostra o botão Nova Consulta
+        button_nova_consulta.grid(row=0, column=2, padx=10, pady=10)
+        # Mostra o botão Exportar Excel
+        button_exportar_excel.grid(row=0, column=3, padx=10, pady=10)
+
     else:
         messagebox.showinfo("Nenhum Resultado", "Nenhum resultado encontrado.")
+        # Esconde o botão Nova Consulta se não houver resultados
+        button_nova_consulta.grid_forget()
+        # Esconde o botão Exportar Excel se não houver resultados
+        button_exportar_excel.grid_forget()
+
+# Função para realizar uma nova consulta
+def nova_consulta():
+    adicionar_item.delete(0, tk.END)
+    for widget in frame_tabela.winfo_children():
+        widget.destroy()
+    # Esconde o botão Nova Consulta após limpar os resultados
+    button_nova_consulta.grid_forget()
+    # Mostra o botão Exportar Excel
+    button_exportar_excel.grid(row=0, column=3, padx=10, pady=10)
+
+# Função para exportar resultados para Excel
+def exportar_excel():
+    consulta_sql = "SELECT Cod, Item, Quantidade, Preço FROM Estoque WHERE Item LIKE ?;"
+    texto_pesquisa = adicionar_item.get()
+    cursor.execute(consulta_sql, ('%' + texto_pesquisa + '%',))
+    resultados = cursor.fetchall()
+
+    if resultados:
+        df = pd.DataFrame(resultados, columns=["Cod", "Item", "Quantidade", "Preço"])
+        file_path = filedialog.asksaveasfilename(defaultextension=".xlsx", filetypes=[("Excel files", "*.xlsx"), ("All files", "*.*")])
+
+        if file_path:
+            df.to_excel(file_path, index=False)
+            messagebox.showinfo("Exportação Concluída", "Os resultados foram exportados com sucesso!")
+    else:
+        messagebox.showinfo("Exportação Falhou", "Nenhum dado disponível para exportar.")
 
 # Função para voltar à tela inicial
 def voltar_home():
@@ -66,8 +104,8 @@ janela.title("Consulta de Estoque - Multishine")
 
 # Definindo cor de fundo e fonte
 cor_fundo = "#0a0a0a"  # Cor escura de fundo
-fonte_titulo = ("Roboto", 20, "bold")
-fonte = ("Roboto", 12)
+fonte_titulo = ("Roboto", 24, "bold")
+fonte = ("Roboto", 14)
 
 # Função para maximizar a janela após a inicialização
 def maximize_window():
@@ -86,16 +124,20 @@ texto_item = customtkinter.CTkLabel(frame, text="Digite o nome do item:", font=f
 texto_item.grid(row=0, column=0, padx=10, pady=10, sticky="w")
 
 # Campo de entrada para adicionar ou pesquisar produtos
-adicionar_item = customtkinter.CTkEntry(frame, placeholder_text="Item", width=50)
+adicionar_item = customtkinter.CTkEntry(frame, placeholder_text="Item", width=400)
 adicionar_item.grid(row=0, column=1, padx=10, pady=10)
 
 # Botão para consultar produtos
-button_consultar = customtkinter.CTkButton(frame, text="Consultar", command=consultar_produtos, width=20)
+button_consultar = customtkinter.CTkButton(frame, text="Consultar", command=consultar_produtos)
 button_consultar.grid(row=0, column=2, padx=10, pady=10)
 
-# Botão para voltar à tela inicial
-button_voltar = customtkinter.CTkButton(frame, text="Voltar", command=voltar_home, width=20)
-button_voltar.grid(row=0, column=3, padx=10, pady=10)
+# Botão para exportar resultados para Excel
+button_exportar_excel = customtkinter.CTkButton(frame, text="Exportar Excel", command=exportar_excel)
+button_exportar_excel.grid(row=0, column=3, padx=10, pady=10)
+
+# Frame para exibir a tabela de resultados
+frame_tabela = tk.Frame(janela, bg=cor_fundo)
+frame_tabela.pack(fill='both', expand=True, padx=50, pady=(20, 50))
 
 # Configura a cor de fundo da janela
 janela.configure(bg=cor_fundo)
@@ -105,6 +147,19 @@ janela.protocol("WM_DELETE_WINDOW", fechar_janela)
 
 # Agendar a maximização da janela após a inicialização
 janela.after(0, maximize_window)
+
+# Função para posicionar o botão "Voltar" no canto superior direito da janela
+def position_button_voltar(event=None):
+    x = janela.winfo_width() - 20
+    button_voltar.place(x=x, y=20, anchor='ne')
+
+# Criando o botão "Voltar"
+button_voltar = customtkinter.CTkButton(janela, text="Voltar", command=voltar_home)
+button_voltar.bind('<Configure>', position_button_voltar)
+button_voltar.pack()
+
+# Criando o botão "Nova Consulta" (inicialmente escondido)
+button_nova_consulta = customtkinter.CTkButton(frame, text="Nova Consulta", command=nova_consulta)
 
 # Inicia o loop principal da aplicação
 janela.mainloop()
